@@ -21,9 +21,20 @@ jobs:
 
       - name: Install packages & setup
         run: |
-          sudo apt update -y  
-          sudo apt install libncurses5-dev python2 libtinfo5 -y      
+          sudo apt update -y
+          # Download and install libtinfo5 manually (Noble doesn't have it)
+          curl -LO http://security.ubuntu.com/ubuntu/pool/universe/n/ncurses/libtinfo5_6.4-2_amd64.deb
+          sudo dpkg -i libtinfo5_6.4-2_amd64.deb
+          
+          # Install Python 2 and other build essentials
+          # Note: We use python2-minimal if python2 isn't found, or install via a legacy repo
+          sudo apt install -y build-essential libncurses5-dev libtinfo6 python3 python3-dev
+          
+          # Create a symlink so the script thinks python2 is there
+          sudo ln -sf /usr/bin/python3 /usr/bin/python2
+          
           bash init_clang_13.sh
+
           
       - name: Set environment variable
         run: |
